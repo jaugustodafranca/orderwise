@@ -1,15 +1,36 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  email     String   @unique
+  threads   Thread[] // Relacionamento com threads
+  chats     Chat[]   // Relacionamento com mensagens de chat
+  createdAt DateTime @default(now())
 }
 
-model User {
-  id String @id @default(uuid()) @db.Uuid
-  name String
-  email String @unique
+model Thread {
+  id        String   @id
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chats     Chat[]   // Relacionamento com mensagens de chat
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  threadId  String
+  role      String   // Papel na conversa: 'user', 'assistant', etc.
+  message   String   // Conteúdo da mensagem
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

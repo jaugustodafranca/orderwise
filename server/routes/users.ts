@@ -3,63 +3,8 @@ import { FastifyTypeInstance } from "../types";
 import { prisma } from "../prisma";
 
 export async function users(app: FastifyTypeInstance) {
-  app.get(
-    "/users",
-    {
-      schema: {
-        description: "Get users list",
-        tags: ["Users"],
-        response: {
-          200: z.array(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              email: z.string(),
-            })
-          ),
-        },
-      },
-    },
-    async (_, reply) => {
-      const users = await prisma.user.findMany();
-      return reply.status(200).send(users);
-    }
-  );
-
-  app.get(
-    "/user/:id",
-    {
-      schema: {
-        description: "Get user by id",
-        tags: ["Users"],
-        response: {
-          200: z
-            .object({
-              id: z.string(),
-              name: z.string(),
-              email: z.string(),
-            })
-            .nullable(),
-        },
-      },
-    },
-    async (request, reply) => {
-      const userIdParam = z.object({
-        id: z.string().uuid(),
-      });
-
-      const { id } = userIdParam.parse(request.params);
-      const user = await prisma.user.findUnique({
-        where: {
-          id,
-        },
-      });
-      return reply.status(200).send(user);
-    }
-  );
-
   app.post(
-    "/users",
+    "/createUser",
     {
       schema: {
         description: "Create new user",
@@ -74,6 +19,8 @@ export async function users(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
+      console.log("originalUrl", request.originalUrl);
+      console.log("body;", request.body);
       const { name, email } = request.body;
       const user = await prisma.user.create({
         data: {
@@ -81,7 +28,55 @@ export async function users(app: FastifyTypeInstance) {
           email,
         },
       });
+
+      console.log("response", user.id);
       return reply.status(201).send(user.id);
+    }
+  );
+
+  app.post(
+    "/checkUserByEmail",
+    {
+      schema: {
+        description: "Check if a user exists by email",
+        tags: ["Users"],
+        body: z.object({
+          email: z.string().email(),
+        }),
+        response: {
+          200: z
+            .object({
+              id: z.string(),
+              name: z.string(),
+              email: z.string(),
+            })
+            .nullable()
+            .describe("User data"),
+        },
+      },
+    },
+    async (request, reply) => {
+      console.log("originalUrl", request.originalUrl);
+      console.log("body;", request.body);
+      const { email } = z
+        .object({
+          email: z.string().email(),
+        })
+        .parse(request.body);
+
+      const userExists = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      });
+
+      console.log("response", userExists);
+      return reply.status(200).send(userExists);
     }
   );
 }

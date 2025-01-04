@@ -37,10 +37,11 @@ app.register(fastifySwaggerUi, {
 app.register(websocketPlugin);
 
 // Agora registre as rotas
-app.register(users);
 app.register(chat);
+app.register(users);
 
-const port = process.env.port ? Number(process.env.port) : 3333;
-app.listen({ port }).then(() => {
-  console.log(`✅ Server is running on: ${port}`);
+const port = process.env.port ? Number(process.env.PORT) : 3333;
+
+app.listen({ port, host: "0.0.0.0" }).then(() => {
+  console.log(`✅ Server is running on port ${port}`);
 });

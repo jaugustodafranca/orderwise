@@ -14,13 +14,14 @@ import { Message } from "./message";
 import { Skeleton } from "./ui/skeleton";
 import { MessageProps } from "@/types";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { AiChatAvatar } from "./ai-chat-avatar";
 
 const ChatComponent = () => {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState("");
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
-    `${import.meta.env.VITE_BASE_URL}chat`
+    `${import.meta.env.VITE_BASE_URL}/chat`
   );
 
   const [isLoading, setIsLoading] = useState(true);
@@ -70,7 +71,7 @@ const ChatComponent = () => {
   }, [messages]);
 
   return (
-    <Card className="w-[440px] h-[90vh] grid grid-rows-[min-content_1fr_min-content] font-extralight">
+    <Card className="w-[440px] h-[100%] min-h-[-webkit-fill-available] sm:h-[90%] sm:min-h-[unset] grid grid-rows-[min-content_1fr_min-content] font-extralight">
       <CardHeader>
         <CardTitle>Chat OrderWise:</CardTitle>
         <CardDescription
@@ -87,7 +88,7 @@ const ChatComponent = () => {
         ))}
         {isLoading && (
           <div className="flex gap-3">
-            <Skeleton className="h-10 w-10 rounded-full bg-slate-500" />
+            <AiChatAvatar />
             <div className="flex flex-col gap-2 flex-1 bg-neutral-100 max-w-[70%] p-2 rounded-lg">
               <Skeleton className="h-4 w-[55%] bg-slate-500" />
               <Skeleton className="h-4 w-[65%] bg-slate-500" />
@@ -103,7 +104,7 @@ const ChatComponent = () => {
         <Input
           placeholder="Type your message here..."
           value={input}
-          className="focus-visible:ring-transparent focus-visible:border-rose-400 h-[40px] placeholder:text-rose-300 border-2 border-rose-500 text-rose-500 font-extralight"
+          className="focus-visible:ring-transparent border-2  font-extralight"
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
         />

@@ -19,3 +19,29 @@ export const createUser = async (args: { name: string; email: string }) => {
   });
   return user;
 };
+
+export const createChatMessage = async (args: {
+  threadId: string;
+  role: string;
+  message: string;
+}) => {
+  const data = await prisma.chatMessage.create({
+    data: args,
+  });
+  return data;
+};
+
+export const createThread = async (args: { id: string; userId?: string }) => {
+  const thread = await prisma.thread.create({
+    data: args,
+  });
+  return thread;
+};
+
+export const updateThread = async (args: { id: string; userId: string }) => {
+  const thread = await prisma.thread.update({
+    where: { id: args.id },
+    data: args,
+  });
+  return thread;
+};

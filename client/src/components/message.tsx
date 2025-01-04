@@ -1,6 +1,5 @@
-import { BotMessageSquare } from "lucide-react";
 import { isSameDay, format } from "date-fns";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AiChatAvatar } from "./ai-chat-avatar";
 
 enum MessageSender {
   Me = "Me",
@@ -25,20 +24,14 @@ export const Message = ({ message }: { message: Message }) => {
       data-me={message.sender === MessageSender.Me}
       className="flex align-middle justify-start gap-3  data-[me=true]:justify-end"
     >
-      {message.sender === MessageSender.Assistant ? (
-        <Avatar>
-          <AvatarFallback className="bg-rose-600 p-2 h-auto">
-            <BotMessageSquare className="text-white" />
-          </AvatarFallback>
-        </Avatar>
-      ) : null}
+      {message.sender === MessageSender.Assistant ? <AiChatAvatar /> : null}
       <p
         data-me={message.sender === MessageSender.Me}
         className="leading-relaxed text-justify bg-neutral-100 text-slate-500 text-sm p-2 rounded-lg max-w-[70%] data-[me=true]:bg-slate-500 data-[me=true]:text-white"
       >
         {message.content}
 
-        <span className="block text-xs text-right mt-1">
+        <span className="block text-[10px] text-right mt-1">
           {parseDate(message.date)}
         </span>
       </p>

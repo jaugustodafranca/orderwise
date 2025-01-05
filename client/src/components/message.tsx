@@ -1,6 +1,6 @@
 import { isSameDay, format } from "date-fns";
 import { AiChatAvatar } from "./ai-chat-avatar";
-
+import Markdown from "react-markdown";
 enum MessageSender {
   Me = "Me",
   Assistant = "Assistant",
@@ -29,7 +29,7 @@ export const Message = ({ message }: { message: Message }) => {
         data-me={message.sender === MessageSender.Me}
         className="leading-relaxed text-justify bg-neutral-100 text-slate-500 text-sm p-2 rounded-lg max-w-[70%] data-[me=true]:bg-slate-500 data-[me=true]:text-white"
       >
-        {message.content}
+        <Markdown>{message.content}</Markdown>
 
         <span className="block text-[10px] text-right mt-1">
           {parseDate(message.date)}

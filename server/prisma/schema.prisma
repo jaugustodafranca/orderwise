@@ -11,23 +11,76 @@ model User {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
   email     String   @unique
-  threads   Thread[] // Relacionamento com threads
+  threads   Thread[]
   createdAt DateTime @default(now())
 }
 
 model Thread {
   id        String   @id
-  userId    String?   @db.Uuid
+  userId    String?  @db.Uuid
   createdAt DateTime @default(now())
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chats     ChatMessage[]   // Relacionamento com mensagens de chat
+  chats     ChatMessage[]
 }
 
 model ChatMessage {
   id        String   @id @default(uuid()) @db.Uuid
   threadId  String
-  role      String   // Papel na conversa: 'user', 'assistant', etc.
-  message   String   // Conteúdo da mensagem
+  role      String
+  message   String
   createdAt DateTime @default(now())
   thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+
+
+model Meals  {
+  id String   @id @default(uuid()) @db.Uuid
+  name String
+  description String
+  ingredients String
+  priceInCents Int
+  isLactoseFree Boolean
+  isGlutenFree Boolean
+  isVegetarian Boolean
+  isVegan Boolean
+  isSpicy Boolean
+  createdAt DateTime @default(now())
+}
+
+model Drinks  {
+  id String   @id @default(uuid()) @db.Uuid
+  name String
+  description String
+  priceInCents Int
+  mililitros Int
+  ingredients String
+  createdAt DateTime @default(now())
+}
+
+model Sides  {
+  id String   @id @default(uuid()) @db.Uuid
+  name String
+  description String
+  ingredients String
+  priceInCents Int
+  isLactoseFree Boolean
+  isGlutenFree Boolean
+  isVegetarian Boolean
+  isVegan Boolean
+  isSpicy Boolean
+  createdAt DateTime @default(now())
+}
+
+
+model Desserts  {
+  id String   @id @default(uuid()) @db.Uuid
+  name String
+  description String
+  ingredients String
+  priceInCents Int
+  isLactoseFree Boolean
+  isGlutenFree Boolean
+  isVegetarian Boolean
+  isVegan Boolean
+  createdAt DateTime @default(now())
 }

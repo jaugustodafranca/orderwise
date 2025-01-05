@@ -1,4 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import fs from "fs/promises";
+import path from "path";
+
 export const prisma = new PrismaClient();
 
 export const getUserByEmail = async (args: { email: string }) => {
@@ -44,4 +47,21 @@ export const updateThread = async (args: { id: string; userId: string }) => {
     data: args,
   });
   return thread;
+};
+
+export const generateMenuJson = async () => {
+  const [meals, drinks, sides, desserts] = await Promise.all([
+    prisma.meals.findMany(),
+    prisma.drinks.findMany(),
+    prisma.sides.findMany(),
+    prisma.desserts.findMany(),
+  ]);
+
+  const menu = { meals, drinks, sides, desserts };
+
+  const filePath = path.join(__dirname, "menu.json");
+
+  await fs.writeFile(filePath, JSON.stringify(menu, null, 2));
+
+  return filePath;
 };

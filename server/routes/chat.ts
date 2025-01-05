@@ -1,4 +1,5 @@
 import z from "zod";
+import fs from "fs";
 import { FastifyTypeInstance } from "../types";
 import {
   getUserByEmail,
@@ -6,6 +7,7 @@ import {
   createChatMessage,
   createThread,
   updateThread,
+  generateMenuJson,
 } from "../prisma";
 import { OpenAI } from "openai";
 import {
@@ -32,20 +34,34 @@ const FUNCTION_NAMES = {
 
 export async function chat(app: FastifyTypeInstance) {
   app.get("/chat", { websocket: true }, async (socket, _) => {
-    log("WebSocket connection opened");
+    // log("WebSocket connection opened");
+
+    // CONSTANTS
     let threadId: string | null = null;
     let userId: string | null | undefined = null;
 
+    // CREATE THREAD AND UPLOAD MENU TO THE THREAD
     if (!threadId) {
       log("Creating new thread");
+      const menuFilePath = await generateMenuJson();
+      const uploadedMenu = await openai.files.create({
+        file: fs.createReadStream(menuFilePath),
+        purpose: "assistants",
+      });
       const threadResponse = await openai.beta.threads.create({
         messages: [
           {
             role: "assistant",
             content: INITIAL_MESSAGE,
+            attachments: [
+              { file_id: uploadedMenu.id, tools: [{ type: "file_search" }] },
+            ],
           },
         ],
       });
+      log("File Uploaded and Thread Created");
+      await fs.promises.unlink(menuFilePath);
+      log("File Deleted");
       threadId = threadResponse.id;
       socket.send(JSON.stringify({ assistantMessage: INITIAL_MESSAGE }));
       await createThread({ id: threadId });
@@ -56,6 +72,7 @@ export async function chat(app: FastifyTypeInstance) {
       });
     }
 
+    // HANDLE EXTERNAL ACTIONS (CHECK_USER_ACCOUNT, CREATE_USER_ACCOUNT)
     const handleExternalAction = async (run: Run, threadId: string) => {
       if (
         run.required_action &&
@@ -104,6 +121,7 @@ export async function chat(app: FastifyTypeInstance) {
       }
     };
 
+    // CREATE RUN AND HANDLE MESSAGES
     const createRun = async (threadId: string) => {
       const run = await openai.beta.threads.runs.create(threadId, {
         assistant_id: assistantId,

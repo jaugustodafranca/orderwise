@@ -8,14 +8,13 @@ import {
   createThread,
   updateThread,
   generateMenuJson,
-} from "../prisma";
+} from "../prisma/index";
 import { OpenAI } from "openai";
 import {
   Run,
   RunSubmitToolOutputsParams,
 } from "openai/resources/beta/threads/runs/index.mjs";
 import { log } from "../utils";
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   project: process.env.OPENAI_API_PROJECT,

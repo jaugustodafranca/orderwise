@@ -25,7 +25,7 @@ export const createUser = async (args: { name: string; email: string }) => {
 
 export const createChatMessage = async (args: {
   threadId: string;
-  role: string;
+  role: "user" | "assistant";
   message: string;
 }) => {
   const data = await prisma.chatMessage.create({

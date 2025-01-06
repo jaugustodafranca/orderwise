@@ -23,10 +23,15 @@ model Thread {
   chats     ChatMessage[]
 }
 
+enum RoleTypes {
+  user
+  assistant
+}
+
 model ChatMessage {
   id        String   @id @default(uuid()) @db.Uuid
   threadId  String
-  role      String
+  role      RoleTypes
   message   String
   createdAt DateTime @default(now())
   thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)

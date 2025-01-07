@@ -1,6 +1,9 @@
+import { memo } from "react";
+import breaks from "remark-breaks";
+import Markdown from "react-markdown";
 import { isSameDay, format } from "date-fns";
 import { AiChatAvatar } from "./ai-chat-avatar";
-import Markdown from "react-markdown";
+
 enum MessageSender {
   Me = "Me",
   Assistant = "Assistant",
@@ -11,8 +14,7 @@ interface Message {
   content: string;
   date: Date;
 }
-
-export const Message = ({ message }: { message: Message }) => {
+export const Message = memo(({ message }: { message: Message }) => {
   const parseDate = (date: Date) => {
     if (isSameDay(date, new Date())) {
       return format(date, "HH:mm");
@@ -25,16 +27,18 @@ export const Message = ({ message }: { message: Message }) => {
       className="flex align-middle justify-start gap-3  data-[me=true]:justify-end"
     >
       {message.sender === MessageSender.Assistant ? <AiChatAvatar /> : null}
-      <p
+      <span
         data-me={message.sender === MessageSender.Me}
         className="leading-relaxed text-justify bg-neutral-100 text-slate-500 text-sm p-2 rounded-lg max-w-[70%] data-[me=true]:bg-slate-500 data-[me=true]:text-white"
       >
-        <Markdown>{message.content}</Markdown>
+        <Markdown remarkPlugins={[breaks]}>
+          {message.content.replace(/\n/gi, "&nbsp;\n")}
+        </Markdown>
 
         <span className="block text-[10px] text-right mt-1">
           {parseDate(message.date)}
         </span>
-      </p>
+      </span>
     </div>
   );
-};
+});

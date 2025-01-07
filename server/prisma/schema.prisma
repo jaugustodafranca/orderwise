@@ -11,8 +11,9 @@ model User {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
   email     String   @unique
-  threads   Thread[]
   createdAt DateTime @default(now())
+  threads   Thread[]
+  orders    Orders[]
 }
 
 model Thread {
@@ -88,4 +89,35 @@ model Desserts  {
   isVegetarian Boolean
   isVegan Boolean
   createdAt DateTime @default(now())
+}
+
+enum StatusType {
+  IN_PROGRESS
+  DONE
+  CANCELLED
+  REFOUND
+}
+
+model Orders {
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @db.Uuid
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       OrderItem[]
+  status      StatusType
+  totalCents  Int         @default(0) // Total em centavos
+  createdAt   DateTime    @default(now())
+}
+
+enum ItemCategory {
+  MEALS
+  DRINKS
+  SIDES
+  DESSERTS
+}
+model OrderItem {
+  id           String       @id @default(uuid()) @db.Uuid
+  orderId      String       @db.Uuid
+  order        Orders       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId       String       @db.Uuid
+  ItemCategory ItemCategory
 }

@@ -106,7 +106,10 @@ const ChatComponent = () => {
           value={input}
           className="focus-visible:ring-transparent border-2  font-extralight"
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          onKeyPress={(e) => {
+            if (e.key === "Enter" && !isLoading && isConnected)
+              handleSendMessage();
+          }}
         />
         <Button
           type="button"

@@ -19,8 +19,6 @@ export async function users(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      console.log("originalUrl", request.originalUrl);
-      console.log("body;", request.body);
       const { name, email } = request.body;
       const user = await prisma.user.create({
         data: {
@@ -29,7 +27,6 @@ export async function users(app: FastifyTypeInstance) {
         },
       });
 
-      console.log("response", user.id);
       return reply.status(201).send(user.id);
     }
   );
@@ -56,8 +53,6 @@ export async function users(app: FastifyTypeInstance) {
       },
     },
     async (request, reply) => {
-      console.log("originalUrl", request.originalUrl);
-      console.log("body;", request.body);
       const { email } = z
         .object({
           email: z.string().email(),
@@ -75,7 +70,6 @@ export async function users(app: FastifyTypeInstance) {
         },
       });
 
-      console.log("response", userExists);
       return reply.status(200).send(userExists);
     }
   );
